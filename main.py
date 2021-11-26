@@ -1,6 +1,12 @@
 from fastapi import FastAPI
+import os
+
 app = FastAPI()
 
 @app.get("/")
 def hello():
-    return {"message":"Hello World"}
+    print(os.environ['Env'])
+    return {
+        "message":"Hello world",
+        "stupid-env":os.environ['Env']
+        }
