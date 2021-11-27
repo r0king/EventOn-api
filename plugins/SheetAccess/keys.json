@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "rking-co",
+  "private_key_id": "1f5b9c7037e527791f4ede240c9ef9bd7d2066dd",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCfMe6SSD0ssp+m\nvmbKPFEkHudj92O7r7Q/VsgXVH6v0hsBycbwpQUUIwEolP9BzrGcd6lQyu842LE0\n+TKCthyGrExQ9wK9IfTHjaMn8L/mAOnDVqNVyUbXPEMmXZjhPL6Tt38DPPM5xlR2\n4FQWuqP70dn8FdueU7eoEY/l0CEvO7qDRseYX1NE/85FjgZLuZwlP53U0f7BJh90\npU7LSJfBRiWnsbTd/1g98QrdK9MUl2byJ8pfEjFAlcUYTQs/NEq6mtUfX+l9DNcZ\nyuXsBal2MQIQJzeC22aj6aWEaP7gx9VvJainZDa5gPiimAhrwf94/kDFD7T7gDSH\nzV01iFc3AgMBAAECggEAPdGshLaztstIjv5KOUdx9PZhQaMcYhJpit0ex1yC87DB\n1xBthh522ep79S/i7cGfnBSltd+QRQF00w7gK/0fF7cJzbkWIa7xeJqKXKSzSFRb\ncoUO2W3XahaXNutKxlCJ6x/rHS1KgEmBnEYhsU/aBRxpK2irh5CX9ZaYTBRmBops\n5NoCnd0198eMJyloS2n5zUSqxspfHpwOdbuhuJ69VIrXYtj1LjscTEGSa8LnWIGh\n/J0yTFjpJkZVRfztsp3tnKZRwPAd/ZRn6cN/4XbjT598a+/bKlFZ/H8gJWxN1K9k\nYElcANpjxcbPCxEfdU968l+sHWm2wH8k7mB2rkHEcQKBgQDNF0GhUfGqeCJLzm2P\nK67EIN/Xagm6jr2VabUMsOlQtQFxozpUpBnq1rYozvJMHt/r+zsirFzg+onsJ+1N\nxLOekwOZGXbxW48y3DlD6zUq9e6JFX8gNjslTAxjd19lBa0XyXRQcirLGQguFaxt\n+SmTosITLCF1uMdRLYngFyIS8QKBgQDGtiwIjoD5f/Fh04yv3tyIzxnrP8NNmOyd\ncFlJP1wqK5sbW6uocFVUdoQkVj6vuvyWL+cO2+77jb97pbVAQcSQd1H2k8Z8vQqR\n9NEqNZOxptA3JduZCQiQwGcaGb9q1u7FjpRbMsfv32VdIiqDTV9HGOp3xck7nLEy\n2D7M9LW8pwKBgGb0LMMRwrIjmnvZhZAgipv0MMoPdhDLxQnzRaq4SHd2VeI44XhJ\n5KTJ4im8MU/bE+d/d6EhS4K44nHFXU/z1YNeI6lAakAhCVKr0KdytH77dCImw2ll\nL+26LmHkM+QfpFPTkmsr1KWdzEhuIuAV+zQcuTYsqiNRfeUXaiYvFrDRAoGBAKeq\nmuj1ZPog7ImAuNrEjwyYwuPuv1pASJZnb88QOTIT7SJebS8I6dcE0WbfprEcc3g+\nHxY4mSOEbSdloNQBKlxDcdM+yWIDGGIjUkHtRxvFBzchKHOuXZ3V2qj5RLxfcsUb\nEy8IYA+UTbER3RFBPb191okNSEiWZCXktMi3SolNAoGAVUbr8a3v6PtfQvq/yKxT\n+QDYYRaBrhF6p9UEmdkMOPSfa7Rto+PukxeKalppxb781WbovRP++8K588HfdOke\nJYHjv9ABlh8QjMT/rWrc+cJ8zS+0I3mOLJUi9jMxxKdA6wDwFbRv7t2Z+IAhWQiu\njqVaCo0ZPNW9WMPsqsk9R6M=\n-----END PRIVATE KEY-----\n",
+  "client_email": "covking@rking-co.iam.gserviceaccount.com",
+  "client_id": "106807679109396612338",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/covking%40rking-co.iam.gserviceaccount.com"
+}
