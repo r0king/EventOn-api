@@ -152,3 +152,21 @@ if __name__ == '__main__':
               'A Test mail from you from Python',
               '<b>A mail from you from Python</b><br><br>' +
               'So happy to hear from you!')
+
+
+# import yagmail
+
+# sender_email = '123royalbabu@gmail.com  '
+# receiver_email = 'roykngbst@gmail.com'
+# subject = "Check THIS out"
+# sender_password = input(f'Please, enter the password for {sender_email}:\n')
+
+# yag = yagmail.SMTP(user=sender_email, oauth2_file="~/creds.json")
+
+# contents = [
+#   "This is the first paragraph in our email",
+#   "As you can see, we can send a list of strings,",
+#   "being this our third one",
+# ]
+
+# yag.send(receiver_email, subject, contents)
