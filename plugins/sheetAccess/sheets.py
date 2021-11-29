@@ -14,7 +14,7 @@ from fastapi import FastAPI,Request
 
 def NewSheet(user_id,sheet_name='Student'):
 
-    CLIENT_SECRET_FILE = 'plugins/sheetAccess/keys.json'
+    CLIENT_SECRET_FILE = './keys.json'
     API_SERVICE_NAME = 'sheets'
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -34,12 +34,14 @@ def NewSheet(user_id,sheet_name='Student'):
               }
           ]
       }
-    # try:
-    service = ''
-    # if not find(f'token_{user_id}_sheets_v4.pickle','./tokens/') :
-    service = Create_Service(CLIENT_SECRET_FILE, API_SERVICE_NAME, API_VERSION, SCOPES, user_id=user_id)
-    newspreadsheet = service.spreadsheets().create(body=sheet_body).execute()
+    try:
+      service = ''
+      # if not find(f'token_{user_id}_sheets_v4.pickle','./tokens/') :
+      service = Create_Service(CLIENT_SECRET_FILE, API_SERVICE_NAME, API_VERSION, SCOPES, user_id=user_id)
+      newspreadsheet = service.spreadsheets().create(body=sheet_body).execute()
 
-
+    except Exception as E:
+      newspreadsheet = None
+      return {'Error':E}
 
     return newspreadsheet
