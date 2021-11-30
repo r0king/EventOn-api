@@ -34,3 +34,17 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
+
+class EventBase(BaseModel):
+    name :str
+
+class EventSheet(EventBase):
+    sheet_id : str
+
+class Event(EventBase):
+    email : str
+
+    class Config:
+        orm_mode = True
+
+    
