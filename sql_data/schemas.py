@@ -28,7 +28,6 @@ class UserCreate(UserBase):
 
 
 class User(UserBase):
-    id: int
     is_active: bool
     sheets: List[Sheet] = []
 
@@ -41,7 +40,7 @@ class EventBase(BaseModel):
 class EventSheet(EventBase):
     sheet_id : str
 
-class Event(EventBase):
+class Event(EventSheet):
     email : str
 
     class Config:
