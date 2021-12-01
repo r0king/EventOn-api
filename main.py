@@ -19,10 +19,10 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/users/", response_model=List[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = crud.get_users(db, skip=skip, limit=limit)
-    return users
+# @app.get("/users/", response_model=List[schemas.User])
+# def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+#     users = crud.get_users(db, skip=skip, limit=limit)
+#     return users
 
 #create new  user
 @app.post("/users/", response_model=schemas.User)
@@ -33,24 +33,55 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 @app.get("/events/", response_model=List[schemas.Event])
-def get_events(email: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def get_events(email: str, db: Session = Depends(get_db)):
     
     events = crud.get_events(db, email=email)
     return events
 
 #create new  event
-@app.post("/events/", response_model=List[schemas.Sheet])
+@app.post("/events/",response_model=schemas.Event)
 def create_events(
-                sheet: schemas.SheetBase,
-                user_id:str,
+                email:str,
                 event_name:str,
+                title: Optional[str],
+                sheet: Optional[ schemas.SheetBase  ] = None ,
                 db: Session = Depends(get_db)):
+    
+    user_events = crud.get_event_by_name(db,name=event_name )
+    if user_events:
+        raise HTTPException(status_code=400, detail="Event Name Already Exists")
+    
+    if sheet is None:
+        sheet = schemas.SheetBase
+        newspreadsheet = NewSheet(user_id=email,sheet_name=title)
+        sheet.id = newspreadsheet["spreadsheetId"]
+        title = newspreadsheet["properties"]
+        title = title['title']
+        
+        user_sheets = crud.get_sheet_by_id(db,id=sheet.id )
+        if user_sheets:
+            raise HTTPException(status_code=400, detail="Sheet Already Exists")
+        
+        crud.create_sheet(
+                db,
+                id=sheet.id,
+                user_id=email)
 
-    user_sheets = crud.get_sheet_by_id(db,id=sheet.id)
-    if not user_sheets:
-        raise HTTPException(status_code=400, detail="Sheet Not Created")
+    else:
+        user_sheets = crud.get_sheet_by_id(db,id=sheet.id)
+        if not user_sheets:
+            raise HTTPException(status_code=400, detail="Sheet not found")
+            
+    return crud.create_event(db, email=email, name=event_name, sheet_id=sheet.id )
 
-    return crud.create_event(db,sheet_id=sheet.id,name=event_name,email=user_id)
+@app.delete('/events/',response_model=schemas.Event)
+def delelte_events(
+        id: str,
+        db :Session=Depends(get_db)
+    ):
+    user_event = crud.get_event_by_id(db=db , id=id)
+    db.delete(user_event)
+    db.commit()
 
 @app.get("/sheets/{email}", response_model=List[schemas.SheetFull])
 def get_sheet(email:str,db: Session = Depends(get_db)):
@@ -63,11 +94,7 @@ def create_sheet(sheet: schemas.SheetName, user_id:str, db: Session = Depends(ge
     user_sheets = crud.get_sheet_by_id(db,id=sheet.id )
     if user_sheets:
         raise HTTPException(status_code=400, detail="Sheet Already Exists")
-    return crud.create_sheet(db,sheet=sheet,user_id=user_id)
-
-
-# @app.get("/create-sheet/")
-# def read_root(user_id:str,request: Request, db: Session = Depends(get_db)):
-
-#     newspreadsheet = NewSheet(user_id=user_id,sheet_name='Student List')
-#     return newspreadsheet
+    return crud.create_sheet(
+                db,
+                id=sheet.id,
+                user_id=user_id)
