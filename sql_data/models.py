@@ -11,15 +11,12 @@ class User(Base):
 
     __tablename__ = "users"
 
-
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, primary_key=True, unique=True, index=True)
+    email = Column(String, primary_key=True, index=True)
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
     
     items = relationship("Sheet", back_populates="owner")
-    events = relationship('Event',back_populates='user')
-
+    events = relationship("Event", back_populates="owner")
 
 class Sheet(Base):
 
@@ -31,16 +28,15 @@ class Sheet(Base):
     owner_id = Column(String, ForeignKey("users.email"))
 
     owner = relationship("User", back_populates="items")
-    event = relationship('Event',back_populates='sheet',uselist=False)
+    event = relationship('Event',back_populates='sheet')
 
 class Event(Base):
 
     __tablename__ = "events"
-    sheet_id = Column(ForeignKey('sheet.id') , primary_key=True, index=True)
-    email = Column(ForeignKey('users.email') , primary_key=True)
-    count = Column(Integer , autoincrement=1)
+    sheet_id = Column(String, ForeignKey('sheet.id') , primary_key=True, index=True)
     name = Column(String)
+    email = Column(String, ForeignKey("users.email"))
 
+    owner = relationship("User", back_populates="events")
     sheet = relationship("Sheet",back_populates='event')
-    user = relationship("User",back_populates='events')
 
