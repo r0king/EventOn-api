@@ -1,7 +1,9 @@
+from inspect import FrameInfo
 from os import name
+from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import user
-
+from . import crud
 from . import models, schemas
 
 
@@ -30,7 +32,18 @@ def get_events(db: Session, email: str):
 
 
 def get_event_by_id(db: Session, id: str):
-    return db.query(models.Event).filter_by(id=id).first()
+    return db.query(models.Event).filter_by(sheet_id=id).first()
+
+def delete_sheet(db: Session, id: str):
+    
+    user_event = crud.get_event_by_id(db=db , id=id)
+    if not user_event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    db.delete(user_event)
+    db.commit()
+    return user_event
+
 
 def get_event_by_name(db: Session, name: str):
     return db.query(models.Event).filter_by(name=name).first()
