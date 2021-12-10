@@ -131,3 +131,7 @@ dmypy.json
 # custom
 env
 test.py
+creds.json
+*/keys.json
+token_*
+/test
