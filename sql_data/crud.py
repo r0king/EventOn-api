@@ -45,8 +45,8 @@ def delete_sheet(db: Session, id: str):
     return user_event
 
 
-def get_event_by_name(db: Session, name: str):
-    return db.query(models.Event).filter_by(name=name).first()
+def get_user_event_by_name(db: Session, name: str,email:str):
+    return db.query(models.Event).filter_by(name=name,email=email).first()
 
 
 def create_user(db: Session, user: schemas.UserCreate):
