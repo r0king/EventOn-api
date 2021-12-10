@@ -1,18 +1,6 @@
+from .auth import NewSheet
 
-import os
-from webbrowser import Error
-from fastapi.params import Body
-from .Google import Create_Service
-from typing import Optional
-from fastapi import FastAPI,Request
-
-
-# def find(name, path):
-#     for root, dirs, files in os.walk(path):
-#         if name in files:
-#             return True
-
-def NewSheet(user_id,sheet_name='Student'):
+def create_google_sheet(user_id,sheet_name='Student'):
 
     CLIENT_SECRET_FILE = 'plugins/sheetAccess/keys.json'
     API_SERVICE_NAME = 'sheets'
@@ -34,14 +22,6 @@ def NewSheet(user_id,sheet_name='Student'):
               }
           ]
       }
-    # try:
-    service = ''
-    # if not find(f'token_{user_id}_sheets_v4.pickle','./tokens/') :
-    service = Create_Service(CLIENT_SECRET_FILE, API_SERVICE_NAME, API_VERSION, SCOPES, user_id=user_id)
+    service = NewSheet(user_id=user_id,CLIENT_SECRET_FILE=CLIENT_SECRET_FILE,API_SERVICE_NAME=API_SERVICE_NAME,API_VERSION=API_VERSION,SCOPES=SCOPES,sheet_body=sheet_body,sheet_name='Student')
     newspreadsheet = service.spreadsheets().create(body=sheet_body).execute()
-
-    # except Exception as E:
-    #   newspreadsheet = None
-    #   return {'Error':E}
-
     return newspreadsheet

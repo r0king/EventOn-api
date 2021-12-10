@@ -3,7 +3,7 @@ import os
 from fastapi.params import Body
 from typing import List, Optional
 from fastapi import FastAPI,Request,Depends,HTTPException
-from plugins.sheetAccess.sheets import NewSheet
+from plugins.sheetAccess.sheets import create_google_sheet
 from sqlalchemy.orm import Session
 
 from sql_data import crud, models, schemas
@@ -47,13 +47,13 @@ def create_events(
                 sheet: Optional[ schemas.SheetBase  ] = None ,
                 db: Session = Depends(get_db)):
     
-    user_events = crud.get_event_by_name(db,name=event_name )
+    user_events = crud.get_user_event_by_name(db,name=event_name,email=email)
     if user_events:
         raise HTTPException(status_code=409, detail="Event Name Already Exists")
     
     if sheet is None:
         sheet = schemas.SheetBase
-        newspreadsheet = NewSheet(user_id=email,sheet_name=title)
+        newspreadsheet = create_google_sheet(user_id=email,sheet_name=title)
         sheet.id = newspreadsheet["spreadsheetId"]
         title = newspreadsheet["properties"]
         title = title['title']
