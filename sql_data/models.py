@@ -1,6 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-
+from passlib.hash import bcrypt
 
 from .database import Base
 
@@ -17,7 +17,10 @@ class User(Base):
     
     items = relationship("Sheet", back_populates="owner")
     events = relationship("Event", back_populates="owner")
-
+    
+    def verify_password(self,password):
+        return bcrypt.verify(password, self.hashed_password)
+    
 class Sheet(Base):
 
     __tablename__ = "sheet"
