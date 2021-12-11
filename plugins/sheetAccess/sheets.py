@@ -22,6 +22,6 @@ def create_google_sheet(user_id,sheet_name='Student'):
               }
           ]
       }
-    service = NewSheet(user_id=user_id,CLIENT_SECRET_FILE=CLIENT_SECRET_FILE,API_SERVICE_NAME=API_SERVICE_NAME,API_VERSION=API_VERSION,SCOPES=SCOPES,sheet_body=sheet_body,sheet_name='Student')
+    service = NewSheet(user_id=user_id,CLIENT_SECRET_FILE=CLIENT_SECRET_FILE,API_SERVICE_NAME=API_SERVICE_NAME,API_VERSION=API_VERSION,SCOPES=SCOPES)
     newspreadsheet = service.spreadsheets().create(body=sheet_body).execute()
     return newspreadsheet
