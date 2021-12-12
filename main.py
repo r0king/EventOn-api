@@ -4,6 +4,7 @@ from fastapi.params import Body
 from typing import List, Optional
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from fastapi import FastAPI,Request,Depends,HTTPException,status
+from api_functions.secure import access_token, decode_jwt
 from plugins.sheetAccess.sheets import create_google_sheet
 from sqlalchemy.orm import Session
 import jwt
@@ -11,6 +12,7 @@ from sql_data import crud, models, schemas
 from sql_data.database import SessionLocal, engine
 from sql_data.dependencies import authenticate_user
 models.Base.metadata.create_all(bind=engine)
+from datetime import datetime, timedelta
 
 app = FastAPI()
 
@@ -27,13 +29,16 @@ def get_db():
 #     return users
 
 oauth_scheme = OAuth2PasswordBearer(tokenUrl='token')
-JWT_SECRET = 'myjwtsecret'
 
 async def get_current_user(db: Session = Depends(get_db),token: str = Depends(oauth_scheme)):
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
-        print(payload.get('mail'))
-        user = crud.get_user(db=db,user_id=payload.get('mail'))
+        payload = decode_jwt(token=token)
+        user = crud.get_user(db=db,user_id=payload.get('user id'))
+        if not user:
+            raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail='Invalid user'
+        )
     except:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -50,24 +55,22 @@ def get_token(form :OAuth2PasswordRequestForm = Depends(),db: Session = Depends(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail='Invalid username or password'
         )
-    
-    token = jwt.encode({'mail':user.email}, JWT_SECRET)
-    return {
-        'access_token':token,
-        'token_type' : 'bearer'
-    }
+    return access_token(user_id=user.email)
 
 @app.get('/')
 async def index():
     return {
-        'the_token':'asdfasdf'
+         "name": "Coverkin",
+        "description": "Symertry SSO general API",
+        "version": "0.0.1",
+        "origin": "Float Business Accelerator",
+        "team": "Monsoon '21 Batch"
     }
 
 #create new  user
 @app.post("/users/", response_model=schemas.User)
 def create_user(
             user: schemas.UserCreate,
-            token:str = Depends(oauth_scheme),
             db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
