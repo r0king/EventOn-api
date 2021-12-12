@@ -2,15 +2,6 @@
 import os
 from fastapi.params import Body
 from typing import List, Optional
-<<<<<<< HEAD
-from fastapi import FastAPI,Request,Depends,HTTPException
-from plugins.sheetAccess.sheets import create_google_sheet
-from sqlalchemy.orm import Session
-
-from sql_data import crud, models, schemas
-from sql_data.database import SessionLocal, engine
-models.Base.metadata.create_all(bind=engine)
-=======
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from fastapi import FastAPI,Request,Depends,HTTPException,status
 from api_functions.secure import access_token, decode_jwt
@@ -22,7 +13,6 @@ from sql_data.database import SessionLocal, engine
 from sql_data.dependencies import authenticate_user
 models.Base.metadata.create_all(bind=engine)
 from datetime import datetime, timedelta
->>>>>>> dev
 
 app = FastAPI()
 
@@ -38,11 +28,6 @@ def get_db():
 #     users = crud.get_users(db, skip=skip, limit=limit)
 #     return users
 
-<<<<<<< HEAD
-#create new  user
-@app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-=======
 oauth_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 async def get_current_user(db: Session = Depends(get_db),token: str = Depends(oauth_scheme)):
@@ -87,22 +72,17 @@ async def index():
 def create_user(
             user: schemas.UserCreate,
             db: Session = Depends(get_db)):
->>>>>>> dev
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)
 
 @app.get("/events/", response_model=List[schemas.Event])
-<<<<<<< HEAD
-def get_events(email: str, db: Session = Depends(get_db)):
-=======
 def get_events(
                 email: str,
                 user:schemas.User = Depends(get_current_user),
                 token:str = Depends(oauth_scheme),
                 db: Session = Depends(get_db)):
->>>>>>> dev
     
     events = crud.get_events(db, email=email)
     return events
@@ -113,12 +93,8 @@ def create_events(
                 email:str,
                 event_name:str,
                 title: Optional[str],
-<<<<<<< HEAD
-                sheet: Optional[ schemas.SheetBase  ] = None ,
-=======
                 sheet: Optional[ schemas.SheetBase  ] = None,
                 token:str = Depends(oauth_scheme) ,
->>>>>>> dev
                 db: Session = Depends(get_db)):
     
     user_events = crud.get_user_event_by_name(db,name=event_name,email=email)
