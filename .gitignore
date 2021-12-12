@@ -134,15 +134,8 @@ test.py
 creds.json
 */keys.json
 token_*
-<<<<<<< HEAD
-<<<<<<< HEAD
-/test
-=======
+
 /test
 Makefile
 sql_app.db
->>>>>>> dev
-=======
-/test
-Makefile
->>>>>>> 00bc50e6201362ee52d706bc51ba4a328e4c7118
+
