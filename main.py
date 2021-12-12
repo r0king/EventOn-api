@@ -4,10 +4,7 @@ from fastapi.params import Body
 from typing import List, Optional
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from fastapi import FastAPI,Request,Depends,HTTPException,status
-<<<<<<< HEAD
 from api_functions.secure import access_token, decode_jwt
-=======
->>>>>>> 00bc50e6201362ee52d706bc51ba4a328e4c7118
 from plugins.sheetAccess.sheets import create_google_sheet
 from sqlalchemy.orm import Session
 import jwt
@@ -32,7 +29,6 @@ def get_db():
 #     return users
 
 oauth_scheme = OAuth2PasswordBearer(tokenUrl='token')
-<<<<<<< HEAD
 
 async def get_current_user(db: Session = Depends(get_db),token: str = Depends(oauth_scheme)):
     try:
@@ -43,15 +39,6 @@ async def get_current_user(db: Session = Depends(get_db),token: str = Depends(oa
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail='Invalid user'
         )
-=======
-JWT_SECRET = 'myjwtsecret'
-
-async def get_current_user(db: Session = Depends(get_db),token: str = Depends(oauth_scheme)):
-    try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
-        print(payload.get('mail'))
-        user = crud.get_user(db=db,user_id=payload.get('mail'))
->>>>>>> 00bc50e6201362ee52d706bc51ba4a328e4c7118
     except:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -68,39 +55,22 @@ def get_token(form :OAuth2PasswordRequestForm = Depends(),db: Session = Depends(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail='Invalid username or password'
         )
-<<<<<<< HEAD
     return access_token(user_id=user.email)
-=======
-    
-    token = jwt.encode({'mail':user.email}, JWT_SECRET)
-    return {
-        'access_token':token,
-        'token_type' : 'bearer'
-    }
->>>>>>> 00bc50e6201362ee52d706bc51ba4a328e4c7118
 
 @app.get('/')
 async def index():
     return {
-<<<<<<< HEAD
          "name": "Coverkin",
         "description": "Symertry SSO general API",
         "version": "0.0.1",
         "origin": "Float Business Accelerator",
         "team": "Monsoon '21 Batch"
-=======
-        'the_token':'asdfasdf'
->>>>>>> 00bc50e6201362ee52d706bc51ba4a328e4c7118
     }
 
 #create new  user
 @app.post("/users/", response_model=schemas.User)
 def create_user(
             user: schemas.UserCreate,
-<<<<<<< HEAD
-=======
-            token:str = Depends(oauth_scheme),
->>>>>>> 00bc50e6201362ee52d706bc51ba4a328e4c7118
             db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
