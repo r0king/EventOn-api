@@ -136,3 +136,4 @@ creds.json
 token_*
 /test
 Makefile
+sql_app.db
