@@ -68,7 +68,7 @@ async def index():
     }
 
 #create new  user
-@app.post("/users/", response_model=schemas.User)
+@app.post("/user/", response_model=schemas.User)
 def create_user(
             user: schemas.UserCreate,
             db: Session = Depends(get_db)):
@@ -77,7 +77,7 @@ def create_user(
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)
 
-@app.get("/events/", response_model=List[schemas.Event])
+@app.get("/event/", response_model=List[schemas.Event])
 def get_events( 
                 user:schemas.User = Depends(get_current_user),
                 token: str = Depends(oauth_scheme),
@@ -87,7 +87,7 @@ def get_events(
     return events
 
 #create new  event
-@app.post("/events/",response_model=schemas.Event)
+@app.post("/event/",response_model=schemas.Event)
 def create_events(
                 event_name:str,
                 title: Optional[str],
@@ -129,7 +129,7 @@ def create_events(
             
     return crud.create_event(db, email=user.email, name=event_name, sheet_id=sheet.id )
 
-@app.delete('/events/',response_model=schemas.Event)
+@app.delete('/event/',response_model=schemas.Event)
 def delelte_events(
         id: str,
         token:str = Depends(oauth_scheme),
@@ -141,7 +141,7 @@ def delelte_events(
     return crud.delete_sheet(db,id,user_id=user.email)
 
 
-@app.get("/sheets/{email}", response_model=List[schemas.SheetFull])
+@app.get("/sheet/{email}", response_model=List[schemas.SheetFull])
 def get_sheet(
     email:str,
     token:str = Depends(oauth_scheme),
@@ -150,7 +150,7 @@ def get_sheet(
     return user_sheets
 
 #create new  sheet
-@app.post("/sheets/",response_model=schemas.SheetFull)
+@app.post("/sheet/",response_model=schemas.SheetFull)
 def create_sheet(
         sheet: schemas.SheetName,
         user_id:str, 
