@@ -47,6 +47,15 @@ async def get_current_user(db: Session = Depends(get_db),token: str = Depends(oa
 
     return user
 
+@app.get('/')
+async def index():
+    return {
+         "name": "Coverkin",
+        "description": "",
+        "version": "0.0.1",
+        "team": ""
+    }
+
 @app.post('/token')
 def get_token(form :OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
     user = authenticate_user(db,username=form.username,password=form.password)
@@ -56,16 +65,6 @@ def get_token(form :OAuth2PasswordRequestForm = Depends(),db: Session = Depends(
             detail='Invalid username or password'
         )
     return access_token(user_id=user.email)
-
-@app.get('/')
-async def index():
-    return {
-         "name": "Coverkin",
-        "description": "Symertry SSO general API",
-        "version": "0.0.1",
-        "origin": "Float Business Accelerator",
-        "team": "Monsoon '21 Batch"
-    }
 
 #create new  user
 @app.post("/user/", response_model=schemas.User)
@@ -77,7 +76,7 @@ def create_user(
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)
 
-@app.get("/event/", response_model=List[schemas.Event])
+@app.get("/events/", response_model=List[schemas.Event])
 def get_events( 
                 user:schemas.User = Depends(get_current_user),
                 token: str = Depends(oauth_scheme),
