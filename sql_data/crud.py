@@ -30,12 +30,12 @@ def get_events(db: Session, email: str):
     return db.query(models.Event).filter_by(email=email).all()
 
 
-def get_event_by_id(db: Session, id: str):
-    return db.query(models.Event).filter_by(sheet_id=id).first()
+def get_event_by_id(db: Session, id: str ,user_id:str):
+    return db.query(models.Event).filter_by(sheet_id=id,email=user_id).first()
 
-def delete_sheet(db: Session, id: str):
+def delete_sheet(db: Session, id: str, user_id:str):
     
-    user_event = crud.get_event_by_id(db=db , id=id)
+    user_event = crud.get_event_by_id(db=db , id=id, user_id=user_id)
     if not user_event:
         raise HTTPException(status_code=404, detail="Event not found")
 
