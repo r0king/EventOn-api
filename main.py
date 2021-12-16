@@ -47,6 +47,15 @@ async def get_current_user(db: Session = Depends(get_db),token: str = Depends(oa
 
     return user
 
+@app.get('/')
+async def index():
+    return {
+         "name": "Coverkin",
+        "description": "",
+        "version": "0.0.1",
+        "team": ""
+    }
+
 @app.post('/token')
 def get_token(form :OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
     user = authenticate_user(db,username=form.username,password=form.password)
@@ -57,18 +66,8 @@ def get_token(form :OAuth2PasswordRequestForm = Depends(),db: Session = Depends(
         )
     return access_token(user_id=user.email)
 
-@app.get('/')
-async def index():
-    return {
-         "name": "Coverkin",
-        "description": "Symertry SSO general API",
-        "version": "0.0.1",
-        "origin": "Float Business Accelerator",
-        "team": "Monsoon '21 Batch"
-    }
-
 #create new  user
-@app.post("/users/", response_model=schemas.User)
+@app.post("/user/", response_model=schemas.User)
 def create_user(
             user: schemas.UserCreate,
             db: Session = Depends(get_db)):
@@ -78,32 +77,36 @@ def create_user(
     return crud.create_user(db=db, user=user)
 
 @app.get("/events/", response_model=List[schemas.Event])
-def get_events(
-                email: str,
+def get_events( 
                 user:schemas.User = Depends(get_current_user),
-                token:str = Depends(oauth_scheme),
+                token: str = Depends(oauth_scheme),
                 db: Session = Depends(get_db)):
-    
-    events = crud.get_events(db, email=email)
+
+    events = crud.get_events(db, email=user.email)
     return events
 
 #create new  event
-@app.post("/events/",response_model=schemas.Event)
+@app.post("/event/",response_model=schemas.Event)
 def create_events(
-                email:str,
                 event_name:str,
                 title: Optional[str],
                 sheet: Optional[ schemas.SheetBase  ] = None,
+                user:schemas.User = Depends(get_current_user),
                 token:str = Depends(oauth_scheme) ,
                 db: Session = Depends(get_db)):
-    
-    user_events = crud.get_user_event_by_name(db,name=event_name,email=email)
+
+    #checks similar event name
+
+    user_events = crud.get_user_event_by_name(db,name=event_name,email=user.email)
+
     if user_events:
         raise HTTPException(status_code=409, detail="Event Name Already Exists")
     
+    #if sheet id is given in the api call
+
     if sheet is None:
         sheet = schemas.SheetBase
-        newspreadsheet = create_google_sheet(user_id=email,sheet_name=title)
+        newspreadsheet = create_google_sheet(user_id=user.email,sheet_name=title)
         sheet.id = newspreadsheet["spreadsheetId"]
         title = newspreadsheet["properties"]
         title = title['title']
@@ -112,29 +115,32 @@ def create_events(
         if user_sheets:
             raise HTTPException(status_code=409, detail="Sheet Already Exists")
         
+        # create sheet in database
         crud.create_sheet(
                 db,
                 id=sheet.id,
-                user_id=email)
+                user_id=user.email)
 
     else:
         user_sheets = crud.get_sheet_by_id(db,id=sheet.id)
         if not user_sheets:
             raise HTTPException(status_code=404, detail="Sheet not found")
             
-    return crud.create_event(db, email=email, name=event_name, sheet_id=sheet.id )
+    return crud.create_event(db, email=user.email, name=event_name, sheet_id=sheet.id )
 
-@app.delete('/events/',response_model=schemas.Event)
+@app.delete('/event/',response_model=schemas.Event)
 def delelte_events(
         id: str,
         token:str = Depends(oauth_scheme),
+        user:schemas.User = Depends(get_current_user),
         db :Session=Depends(get_db)
         
     ):
-    return crud.delete_sheet(db,id)
+    
+    return crud.delete_sheet(db,id,user_id=user.email)
 
 
-@app.get("/sheets/{email}", response_model=List[schemas.SheetFull])
+@app.get("/sheet/{email}", response_model=List[schemas.SheetFull])
 def get_sheet(
     email:str,
     token:str = Depends(oauth_scheme),
@@ -143,7 +149,7 @@ def get_sheet(
     return user_sheets
 
 #create new  sheet
-@app.post("/sheets/",response_model=schemas.SheetFull)
+@app.post("/sheet/",response_model=schemas.SheetFull)
 def create_sheet(
         sheet: schemas.SheetName,
         user_id:str, 
