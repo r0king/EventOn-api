@@ -70,3 +70,23 @@ def get_google_sheet(user_id,sheetid):
     service = NewSheet(user_id=user_id,CLIENT_SECRET_FILE=CLIENT_SECRET_FILE,API_SERVICE_NAME=API_SERVICE_NAME,API_VERSION=API_VERSION,SCOPES=SCOPES)
     sheet = service.spreadsheets().values().get(spreadsheetId=sheetid,range='A:Z').execute()
     return sheet['values']
+
+def get_clean_sheet(user_id,sheet_id,columns_used):
+    sheet = get_google_sheet(user_id,sheet_id)
+    Data_using = []
+    DataMissing = 0
+
+    for rowNum, user in enumerate(sheet):
+        userData =[]
+        if rowNum == 0:
+            Header=user    
+
+        else:
+
+            userData = [col for colNo,col in enumerate(user) if colNo in columns_used and col not in [' ',''] ] 
+
+            if len(userData) == len(columns_used):
+                Data_using.append(userData)
+            else:
+                DataMissing += 1
+    return {'Data Missing':DataMissing, "Header":Header, "Data":Data_using}
