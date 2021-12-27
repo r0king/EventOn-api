@@ -1,10 +1,9 @@
-
-import os
-from webbrowser import Error
-from fastapi.params import Body
+# import os
+# from webbrowser import Error
+# from fastapi.params import Body
+# from typing import Optional
+# from fastapi import FastAPI,Request
 from .Google import Create_Service
-from typing import Optional
-from fastapi import FastAPI,Request
 
 
 # def find(name, path):
@@ -15,13 +14,13 @@ from fastapi import FastAPI,Request
 def NewSheet(user_id,CLIENT_SECRET_FILE,API_SERVICE_NAME,API_VERSION,SCOPES):
 
     # try:
-    service = ''
     # if not find(f'token_{user_id}_sheets_v4.pickle','./tokens/') :
+    
     service = Create_Service(CLIENT_SECRET_FILE, API_SERVICE_NAME, API_VERSION, SCOPES, user_id=user_id)
     
+    return service
 
     # except Exception as E:
     #   newspreadsheet = None
     #   return {'Error':E}
 
-    return service
