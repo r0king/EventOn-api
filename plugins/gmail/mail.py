@@ -1,7 +1,6 @@
 import base64
 from plugins.googleapi.Google import Create_Service
-import email
-
+from email.mime.text import MIMEText
 
 def create_mail_service(user_id):
 
@@ -22,7 +21,7 @@ def create_message(sender, to, subject, message_text):
     'raw': raw_message.decode("utf-8")
   }
 
-def send_message(user_id, message):
+def send_message(user_id,subject,to, message):
   """Send an email message.
 
   Args:
@@ -34,9 +33,10 @@ def send_message(user_id, message):
   Returns:
     Sent Message.
   """
+  raw_message = create_message(sender=user_id,to=to,subject=subject,message_text=message)
   Mailer = create_mail_service(user_id=user_id)
   try:
-    message = (Mailer.users().messages().send(userId=user_id, body=message)
+    message = (Mailer.users().messages().send(userId=user_id, body=raw_message)
                .execute())
     print ('Message Id: %s' % message['id'])
     return message
