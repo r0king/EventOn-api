@@ -140,3 +140,4 @@ Makefile
 sql_app.db
 plugins/googleapi/keys.json
 Credentials/
+

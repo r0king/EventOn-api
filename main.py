@@ -47,6 +47,7 @@ async def get_current_user(db: Session = Depends(get_db),token: str = Depends(oa
 
     return user
 # get app details
+
 @app.get('/')
 async def index():
     return {
@@ -55,6 +56,7 @@ async def index():
         "version": "0.0.1",
         "team": ""
     }
+
 # token creation endpoint 
 @app.post('/token')
 def get_token(form :OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
@@ -75,6 +77,7 @@ def create_user(
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)
+
 
 # return all events of current user
 @app.get("/events/", response_model=List[schemas.Event])

@@ -1,4 +1,3 @@
-
  
 from plugins.googleapi.auth import NewSheet
 # from googleapi.auth import NewSheet
@@ -8,7 +7,7 @@ from plugins.googleapi.auth import NewSheet
 def create_google_sheet(user_id,sheet_name='Student'):
 
     CLIENT_SECRET_FILE = 'plugins/googleapi/Credentials/keys.json'
-    API_SERVICE_NAME = 'sheets'
+   API_SERVICE_NAME = 'sheets'
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
