@@ -23,11 +23,12 @@ def Create_Service(client_secret_file, api_name, api_version, *scopes ,user_id):
             cred = Credentials.from_authorized_user_file(tokenfile, SCOPES)
 
     if not cred or not cred.valid:
-        if cred and cred.expired and cred.refresh_token:
-            cred.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_FILE, SCOPES)
-            cred = flow.run_local_server(success_message='The Authentication Was succssfull You May Now Close This Window ',port=8080)
+        # if cred and cred.expired and cred.refresh_token:
+        #     # cred.refresh(Request())
+        #     refreshing expired token not working
+        # else:
+        flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_FILE, SCOPES)
+        cred = flow.run_local_server(success_message='The Authentication Was succssfull You May Now Close This Window ',port=8080)
 
         with open(tokenfile, 'w') as token:
             token.write(cred.to_json())

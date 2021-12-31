@@ -5,7 +5,7 @@ from typing import List, Optional
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from fastapi import FastAPI,Request,Depends,HTTPException,status
 from api_functions.secure import access_token, decode_jwt
-from plugins.sheetAccess.sheets import create_google_sheet
+from plugins.sheetAccess.sheets import create_google_sheet, get_clean_sheet
 from sqlalchemy.orm import Session
 import jwt
 from sql_data import crud, models, schemas
@@ -46,7 +46,7 @@ async def get_current_user(db: Session = Depends(get_db),token: str = Depends(oa
         )
 
     return user
-
+# get app details
 @app.get('/')
 async def index():
     return {
@@ -55,7 +55,7 @@ async def index():
         "version": "0.0.1",
         "team": ""
     }
-
+# token creation endpoint 
 @app.post('/token')
 def get_token(form :OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
     user = authenticate_user(db,username=form.username,password=form.password)
@@ -76,6 +76,7 @@ def create_user(
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)
 
+# return all events of current user
 @app.get("/events/", response_model=List[schemas.Event])
 def get_events( 
                 user:schemas.User = Depends(get_current_user),
@@ -128,6 +129,17 @@ def create_events(
             
     return crud.create_event(db, email=user.email, name=event_name, sheet_id=sheet.id )
 
+# get sheet data
+@app.get('/event/sheet')
+def get_headers(
+        id: str,
+        token:str = Depends(oauth_scheme),
+        user:schemas.User = Depends(get_current_user),
+        db :Session=Depends(get_db)):
+
+    return get_clean_sheet(user_id=user.email,sheet_id=id,columns_used=[0,1])
+
+# delete a given event
 @app.delete('/event/',response_model=schemas.Event)
 def delelte_events(
         id: str,
@@ -139,7 +151,7 @@ def delelte_events(
     
     return crud.delete_sheet(db,id,user_id=user.email)
 
-
+# get sheets of user
 @app.get("/sheet/{email}", response_model=List[schemas.SheetFull])
 def get_sheet(
     email:str,

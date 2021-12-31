@@ -13,7 +13,7 @@ def create_mail_service(user_id):
 
 def create_message(sender, to, subject, message_text):
   message = MIMEText(message_text)
-  message['to'] = to
+  message['bcc'] = to
   message['from'] = sender
   message['subject'] = subject
   raw_message = base64.urlsafe_b64encode(message.as_string().encode("utf-8"))
@@ -33,6 +33,7 @@ def send_message(user_id,subject,to, message):
   Returns:
     Sent Message.
   """
+  to = ','.join(to)
   raw_message = create_message(sender=user_id,to=to,subject=subject,message_text=message)
   Mailer = create_mail_service(user_id=user_id)
   try:
