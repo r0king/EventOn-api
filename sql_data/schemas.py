@@ -46,4 +46,19 @@ class Event(EventSheet):
     class Config:
         orm_mode = True
 
+
+class MailBase(BaseModel):
     
+    subject : str
+    mail_content : str
+
+class Mail(MailBase):
+
+    recivers_address : List[str] = None
+
+class Sheet_Details(BaseModel):
+
+    sheet_id:str
+    mail_col:int
+    colums_used : List[int] = None
+

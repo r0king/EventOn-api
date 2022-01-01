@@ -36,11 +36,48 @@ def send_message(user_id,subject,to, message):
   to = ','.join(to)
   raw_message = create_message(sender=user_id,to=to,subject=subject,message_text=message)
   Mailer = create_mail_service(user_id=user_id)
+  
   try:
     message = (Mailer.users().messages().send(userId=user_id, body=raw_message)
                .execute())
-    print ('Message Id: %s' % message['id'])
-    return message
+    
+    return {
+      "id":message['id'],
+      "subject":subject,
+      "labelIds":message['labelIds']
+    }
+  except Exception as e:
+    print ('An error occurred: %s' % e)
+
+
+def send_mapped_message(user_id: str,subject: str, message: str,map_data: str ,mail_col:int):
+  """Send an email message.
+
+  Args:
+    service: Authorized Gmail API service instance.
+    user_id: User's email address. The special value "me"
+    can be used to indicate the authenticated user.
+    message: Message to be sent.
+
+  """
+  Mailer = create_mail_service(user_id=user_id)
+  Mails = []
+  try:
+    #send mail to each person in the sender's list
+    for user in map_data:
+      raw_message = create_message(sender=user_id,to=user[mail_col],subject=subject,message_text=message)
+      
+      mail = (Mailer.users().messages()
+                .send(userId=user_id, body=raw_message)
+                .execute())
+      Mails.append({
+        "id":mail['id'],
+        "reciverId":user[mail_col],
+        "subject":subject,
+        "labelIds":mail['labelIds']
+      })
+    
+    return Mails
   except Exception as e:
     print ('An error occurred: %s' % e)
 

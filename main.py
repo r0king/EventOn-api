@@ -1,18 +1,15 @@
-
-import os
 from fastapi.params import Body
 from typing import List, Optional
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from fastapi import FastAPI,Request,Depends,HTTPException,status
 from api_functions.secure import access_token, decode_jwt
+from plugins.gmail.mail import send_mapped_message, send_message
 from plugins.sheetAccess.sheets import create_google_sheet, get_clean_sheet
 from sqlalchemy.orm import Session
-import jwt
 from sql_data import crud, models, schemas
 from sql_data.database import SessionLocal, engine
 from sql_data.dependencies import authenticate_user
 models.Base.metadata.create_all(bind=engine)
-from datetime import datetime, timedelta
 
 app = FastAPI()
 
@@ -133,14 +130,48 @@ def create_events(
     return crud.create_event(db, email=user.email, name=event_name, sheet_id=sheet.id )
 
 # get sheet data
-@app.get('/event/sheet')
-def get_headers(
+@app.post('/event/sheet/{id}')
+def get_sheet_data(
         id: str,
+        # colums that are used 
+        colums_used : List[int],
+        token:str = Depends(oauth_scheme),
+        user:schemas.User = Depends(get_current_user),
+        # db :Session=Depends(get_db)
+        ):
+
+    return get_clean_sheet(user_id=user.email,sheet_id=id,columns_used=colums_used)
+
+# Send Mass mail
+@app.post('/event/mail/mass/{id}')
+def send_mass_mail(
+        id:str,
+        mail : schemas.Mail,        
+        token:str = Depends(oauth_scheme),
+        # user:schemas.User = Depends(get_current_user),
+        db :Session=Depends(get_db)):
+ 
+    return send_message(to=mail.recivers_address,subject=mail.subject,user_id=id,message=mail.mail_content)
+
+# Send mapped mail
+@app.post('/event/mail/mapped/{id}')
+def send_mapped_mail(
+        #mail id in which user sends mail
+        mail_id:str,        
+        mail : schemas.MailBase, 
+        sheet: schemas.Sheet_Details,       
         token:str = Depends(oauth_scheme),
         user:schemas.User = Depends(get_current_user),
         db :Session=Depends(get_db)):
-
-    return get_clean_sheet(user_id=user.email,sheet_id=id,columns_used=[0,1])
+    
+    sheet_data = get_clean_sheet(user_id=user.email,sheet_id=sheet.sheet_id,columns_used=sheet.colums_used)['Data']    
+    return send_mapped_message(
+            subject=mail.subject,
+            user_id=mail_id,
+            message=mail.mail_content,
+            map_data=sheet_data,
+            mail_col=sheet.mail_col
+            )
 
 # delete a given event
 @app.delete('/event/',response_model=schemas.Event)

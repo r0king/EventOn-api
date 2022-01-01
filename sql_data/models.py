@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from passlib.hash import bcrypt
@@ -42,4 +43,3 @@ class Event(Base):
 
     owner = relationship("User", back_populates="events")
     sheet = relationship("Sheet",back_populates='event')
-
