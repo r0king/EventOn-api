@@ -72,6 +72,7 @@ def send_mapped_message(user_id: str,subject: str, message: str,map_data: str ,m
                 .execute())
       Mails.append({
         "id":mail['id'],
+        "reciverId":user[mail_col],
         "subject":subject,
         "labelIds":mail['labelIds']
       })
