@@ -127,15 +127,17 @@ def create_events(
     return crud.create_event(db, email=user.email, name=event_name, sheet_id=sheet.id )
 
 # get sheet data
-@app.get('/event/sheet/{id}')
+@app.post('/event/sheet/{id}')
 def get_sheet_data(
         id: str,
+        # colums that are used 
+        colums_used : List[int],
         token:str = Depends(oauth_scheme),
         user:schemas.User = Depends(get_current_user),
         # db :Session=Depends(get_db)
         ):
 
-    return get_clean_sheet(user_id=user.email,sheet_id=id,columns_used=[0,1])
+    return get_clean_sheet(user_id=user.email,sheet_id=id,columns_used=colums_used)
 
 # Send Mass mail
 @app.post('/event/mail/mass/{id}')
@@ -151,13 +153,22 @@ def send_mass_mail(
 # Send mapped mail
 @app.post('/event/mail/mapped/{id}')
 def send_mapped_mail(
-        id:str,
-        mail : schemas.Mail,        
+        #mail id in which user sends mail
+        mail_id:str,        
+        mail : schemas.MailBase, 
+        sheet: schemas.Sheet_Details,       
         token:str = Depends(oauth_scheme),
-        # user:schemas.User = Depends(get_current_user),
+        user:schemas.User = Depends(get_current_user),
         db :Session=Depends(get_db)):
- 
-    return send_mapped_message(to=mail.recivers_address,subject=mail.subject,user_id=id,message=mail.mail_content)
+    
+    sheet_data = get_clean_sheet(user_id=user.email,sheet_id=sheet.sheet_id,columns_used=sheet.colums_used)['Data']    
+    return send_mapped_message(
+            subject=mail.subject,
+            user_id=mail_id,
+            message=mail.mail_content,
+            map_data=sheet_data,
+            mail_col=sheet.mail_col
+            )
 
 # delete a given event
 @app.delete('/event/',response_model=schemas.Event)

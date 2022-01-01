@@ -50,7 +50,7 @@ def send_message(user_id,subject,to, message):
     print ('An error occurred: %s' % e)
 
 
-def send_mapped_message(user_id,subject,to, message):
+def send_mapped_message(user_id: str,subject: str, message: str,map_data: str ,mail_col:int):
   """Send an email message.
 
   Args:
@@ -64,11 +64,12 @@ def send_mapped_message(user_id,subject,to, message):
   Mails = []
   try:
     #send mail to each person in the sender's list
-    for user in to:
-      raw_message = create_message(sender=user_id,to=user,subject=subject,message_text=message)
+    for user in map_data:
+      raw_message = create_message(sender=user_id,to=user[mail_col],subject=subject,message_text=message)
       
-      mail = (Mailer.users().messages().send(userId=user_id, body=raw_message)
-               .execute())
+      mail = (Mailer.users().messages()
+                .send(userId=user_id, body=raw_message)
+                .execute())
       Mails.append({
         "id":mail['id'],
         "subject":subject,
