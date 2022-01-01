@@ -46,4 +46,9 @@ class Event(EventSheet):
     class Config:
         orm_mode = True
 
-    
+
+class Mail(BaseModel):
+
+    recivers_address : List[str] = None
+    subject : str
+    mail_content : str

@@ -39,7 +39,10 @@ def send_message(user_id,subject,to, message):
   try:
     message = (Mailer.users().messages().send(userId=user_id, body=raw_message)
                .execute())
-    print ('Message Id: %s' % message['id'])
-    return message
+    return {
+      "id":message['id'],
+      "subject":subject,
+      "labelIds":message['labelIds']
+    }
   except Exception as e:
     print ('An error occurred: %s' % e)
