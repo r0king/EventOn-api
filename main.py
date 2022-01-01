@@ -3,7 +3,7 @@ from typing import List, Optional
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 from fastapi import FastAPI,Request,Depends,HTTPException,status
 from api_functions.secure import access_token, decode_jwt
-from plugins.gmail.mail import send_message
+from plugins.gmail.mail import send_mapped_message, send_message
 from plugins.sheetAccess.sheets import create_google_sheet, get_clean_sheet
 from sqlalchemy.orm import Session
 from sql_data import crud, models, schemas
@@ -138,7 +138,7 @@ def get_sheet_data(
     return get_clean_sheet(user_id=user.email,sheet_id=id,columns_used=[0,1])
 
 # Send Mass mail
-@app.post('/event/mail/{id}')
+@app.post('/event/mail/mass/{id}')
 def send_mass_mail(
         id:str,
         mail : schemas.Mail,        
@@ -147,6 +147,17 @@ def send_mass_mail(
         db :Session=Depends(get_db)):
  
     return send_message(to=mail.recivers_address,subject=mail.subject,user_id=id,message=mail.mail_content)
+
+# Send mapped mail
+@app.post('/event/mail/mapped/{id}')
+def send_mapped_mail(
+        id:str,
+        mail : schemas.Mail,        
+        token:str = Depends(oauth_scheme),
+        # user:schemas.User = Depends(get_current_user),
+        db :Session=Depends(get_db)):
+ 
+    return send_mapped_message(to=mail.recivers_address,subject=mail.subject,user_id=id,message=mail.mail_content)
 
 # delete a given event
 @app.delete('/event/',response_model=schemas.Event)
