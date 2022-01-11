@@ -145,13 +145,13 @@ def get_sheet_data(
 # Send Mass mail
 @app.post('/event/mail/mass/{id}')
 def send_mass_mail(
-        id:str,
+        mail_id:str,
         mail : schemas.Mail,        
         token:str = Depends(oauth_scheme),
         # user:schemas.User = Depends(get_current_user),
         db :Session=Depends(get_db)):
  
-    return send_message(to=mail.recivers_address,subject=mail.subject,user_id=id,message=mail.mail_content)
+    return send_message(to=mail.recivers_address,subject=mail.subject,user_id=mail_id,message=mail.mail_content)
 
 # Send mapped mail
 @app.post('/event/mail/mapped/{id}')
@@ -164,7 +164,7 @@ def send_mapped_mail(
         user:schemas.User = Depends(get_current_user),
         db :Session=Depends(get_db)):
     
-    sheet_data = get_clean_sheet(user_id=user.email,sheet_id=sheet.sheet_id,columns_used=sheet.colums_used)['Data']    
+    sheet_data = get_clean_sheet(user_id=user.email,sheet_id=sheet.sheet_id,columns_used=sheet.colums_used)    
     return send_mapped_message(
             subject=mail.subject,
             user_id=mail_id,
@@ -172,6 +172,7 @@ def send_mapped_mail(
             map_data=sheet_data,
             mail_col=sheet.mail_col
             )
+            
 
 # delete a given event
 @app.delete('/event/',response_model=schemas.Event)

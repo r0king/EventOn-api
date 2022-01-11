@@ -2,6 +2,8 @@ import base64
 from plugins.googleapi.Google import Create_Service
 from email.mime.text import MIMEText
 
+from sql_data.schemas import Mail
+
 def create_mail_service(user_id):
 
     CLIENT_SECRET_FILE = 'plugins/googleapi/Credentials/keys.json'
@@ -11,9 +13,9 @@ def create_mail_service(user_id):
     service = Create_Service(CLIENT_SECRET_FILE, API_SERVICE_NAME, API_VERSION, SCOPES, user_id=user_id)
     return service
 
-def create_message(sender, to, subject, message_text):
+def create_message(sender, to, subject, message_text ,to_method='bcc'):
   message = MIMEText(message_text)
-  message['bcc'] = to
+  message[to_method] = to
   message['from'] = sender
   message['subject'] = subject
   raw_message = base64.urlsafe_b64encode(message.as_string().encode("utf-8"))
@@ -51,6 +53,7 @@ def send_message(user_id,subject,to, message):
 
 
 def send_mapped_message(user_id: str,subject: str, message: str,map_data: str ,mail_col:int):
+
   """Send an email message.
 
   Args:
@@ -64,20 +67,30 @@ def send_mapped_message(user_id: str,subject: str, message: str,map_data: str ,m
   Mails = []
   try:
     #send mail to each person in the sender's list
-    for user in map_data:
-      raw_message = create_message(sender=user_id,to=user[mail_col],subject=subject,message_text=message)
+    for user in map_data['Data']:      
+      mapped_message = message
+      mapped_subject = subject
+      for index,header in enumerate(map_data['Header']):        
+        mapped_message = mapped_message.replace(f'<<{header}>>',user[index])
+        mapped_subject = mapped_subject.replace(f'<<{header}>>',user[index])
+
+        # print(f'head {header},\nmap :{user[index]},\nmessage :{mapped_message},\nsubject :{mapped_subject}')
+      
+      raw_message = create_message(sender=user_id,to=user[mail_col],subject=mapped_subject,message_text=mapped_message ,to_method='cc')
       
       mail = (Mailer.users().messages()
                 .send(userId=user_id, body=raw_message)
                 .execute())
+
       Mails.append({
         "id":mail['id'],
         "reciverId":user[mail_col],
         "subject":subject,
         "labelIds":mail['labelIds']
       })
-    
+
     return Mails
   except Exception as e:
     print ('An error occurred: %s' % e)
+    return e
 
