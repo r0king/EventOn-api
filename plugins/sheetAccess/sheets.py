@@ -1,5 +1,5 @@
  
-from plugins.googleapi.auth import NewSheet
+from plugins.googleapi.Google import Create_Service
 # from googleapi.auth import NewSheet
 
 
@@ -56,7 +56,7 @@ def create_google_sheet(user_id,sheet_name='Student'):
             }
           ]
       }
-    service = NewSheet(user_id=user_id,CLIENT_SECRET_FILE=CLIENT_SECRET_FILE,API_SERVICE_NAME=API_SERVICE_NAME,API_VERSION=API_VERSION,SCOPES=SCOPES)
+    service = Create_Service(CLIENT_SECRET_FILE,API_SERVICE_NAME,API_VERSION,SCOPES,user_id=user_id)
     newspreadsheet = service.spreadsheets().create(body=sheet_body).execute()
     return newspreadsheet
 
@@ -66,7 +66,7 @@ def get_google_sheet(user_id,sheetid):
     API_VERSION = 'v4'
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
     
-    service = NewSheet(user_id=user_id,CLIENT_SECRET_FILE=CLIENT_SECRET_FILE,API_SERVICE_NAME=API_SERVICE_NAME,API_VERSION=API_VERSION,SCOPES=SCOPES)
+    service = Create_Service(CLIENT_SECRET_FILE,API_SERVICE_NAME,API_VERSION,SCOPES,user_id=user_id)
     sheet = service.spreadsheets().values().get(spreadsheetId=sheetid,range='A:Z').execute()
     return sheet['values']
 
