@@ -1,7 +1,9 @@
-from fastapi.params import Body
+from __future__ import print_function
+from google_auth_oauthlib.flow import Flow
+
 from typing import List, Optional
 from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
-from fastapi import FastAPI,Request,Depends,HTTPException,status
+from fastapi import FastAPI,Request,Depends,HTTPException,status,Response,Cookie
 from api_functions.secure import access_token, decode_jwt
 from plugins.gmail.mail import send_mapped_message, send_message
 from plugins.sheetAccess.sheets import create_google_sheet, get_clean_sheet
@@ -9,6 +11,8 @@ from sqlalchemy.orm import Session
 from sql_data import crud, models, schemas
 from sql_data.database import SessionLocal, engine
 from sql_data.dependencies import authenticate_user
+
+
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -209,3 +213,48 @@ def create_sheet(
                 db,
                 id=sheet.id,
                 user_id=user_id)
+
+SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
+
+@app.get('/oauth2callback')
+def oauth2callback_for_google(
+                state:str,
+                code:str,
+                scope:str,
+                request: Request
+                ):
+    CLIENT_SECRETS_FILE = 'plugins/googleapi/Credentials/keys.json'
+    flow = Flow.from_client_secrets_file(
+      CLIENT_SECRETS_FILE, scopes=None, state=state)
+    
+    flow.redirect_uri = request.url_for('oauth2callback_for_google')
+    flow.fetch_token(code=code)
+    credentials = flow.credentials
+    return {"Authentication complete":credentials}
+
+
+#test drive api
+@app.get("/drive/")
+def create_drive(
+    request: Request,
+    response:Response
+):
+    CLIENT_SECRETS_FILE = 'plugins/googleapi/Credentials/keys.json'
+    API_SERVICE_NAME = 'drive'
+    API_VERSION = 'v2'
+    flow = Flow.from_client_secrets_file(
+      CLIENT_SECRETS_FILE, scopes=SCOPES)
+    flow.redirect_uri = request.url_for('oauth2callback_for_google')
+      # Enable offline access so that you can refresh an access token without
+      # re-prompting the user for permission. Recommended for web server apps.
+      # Enable incremental authorization. Recommended as a best practice.
+    authorization_url, state = flow.authorization_url(
+      access_type='offline',
+      include_granted_scopes='true')
+
+    response.set_cookie(key="state", value=state)
+    return {
+            'redirect_url':authorization_url
+            }
+
+
