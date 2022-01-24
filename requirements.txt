@@ -79,7 +79,7 @@ starlette==0.16.0
 toml==0.10.2
 tortoise==0.1.1
 typing_extensions==4.0.0
-ujson==4.3.0
+ujson>=5.1.0
 uritemplate==4.1.1
 urllib3==1.26.7
 uvicorn==0.15.0
