@@ -1,5 +1,5 @@
 
-# Coverin--backend
+# EventOn--backend
 Backend API Server 
 - FastAPI
 - SQLAlchemy
